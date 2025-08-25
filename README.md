@@ -27,6 +27,12 @@ You can use the following test accounts to explore different roles:
 - **Password:** `admin12345`
 
 ---
+### 🛡️ staff
+
+- **Email:** `alimsujon12@gmail.com`  
+- **Password:** `123456`
+
+---
 
 
 ## Tech Stack
