@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createAsyncThunk,
   createSlice,
@@ -32,8 +33,7 @@ const initialState: AuthState = {
 
 const baseURL = import.meta.env.VITE_BACKEND_BASE_URL;
 
-// Login for restaurant owner
-
+// ---------------- LOGIN ----------------
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (
@@ -52,30 +52,14 @@ export const loginUser = createAsyncThunk(
       Cookies.set("user", JSON.stringify(user));
 
       return { user, accessToken };
-    } catch (error: unknown) {
-      let message = "Login failed";
-      if (
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        error.response &&
-        typeof error.response === "object" &&
-        "data" in error.response &&
-        error.response.data &&
-        typeof error.response.data === "object" &&
-        "message" in error.response.data
-      ) {
-        message =
-          (error.response as { data: { message?: string } }).data.message ||
-          message;
-      }
+    } catch (error: any) {
+      const  message = error?.response?.data?.message || "Login failed";
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Sign Up for restaurant owner
-
+// ---------------- REGISTER ----------------
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (
@@ -112,89 +96,16 @@ export const registerUser = createAsyncThunk(
         }
       );
 
-      // const { userEmail } = res.data;
       Cookies.set("userEmail", res?.data?.data?.userEmail);
-      console.log(
-        "User email in register reduxSlice:",
-        res?.data?.data?.userEmail
-      );
       return res.data?.data;
-    } catch (error: unknown) {
-      let message = "Registration failed";
-      if (
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        error.response &&
-        typeof error.response === "object" &&
-        "data" in error.response &&
-        error.response.data &&
-        typeof error.response.data === "object" &&
-        "message" in error.response.data
-      ) {
-        message =
-          (error.response as { data: { message?: string } }).data.message ||
-          message;
-      }
+    } catch (error: any) {
+      const  message = error?.response?.data?.message || "Registration failed";
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// OTP verification
-
-// export const verifyOtp = createAsyncThunk(
-//   "auth/verifyOtp",
-//   async ({ otp }: { otp: string }, thunkAPI) => {
-//     try {
-//       const email = Cookies.get("userEmail"); // You stored this after registration
-
-//       if (!email) {
-//         throw new Error("Email not found in cookies");
-//       }
-
-//       const res = await axios.post(
-//         `${baseURL}/auth/verify-otp?email=${email}`,
-//         { otp }
-//       );
-
-//       // Cookies.set("accessToken", accessToken, { expires: 1 });
-//       Cookies.remove("userEmail"); // Cleanup after successful verification
-
-//       const data = res.data.data;
-
-//       if (!data) {
-//         // No user/accessToken returned, just success message
-//         return thunkAPI.fulfillWithValue(null); // we explicitly return null to handle in reducer
-//       }
-
-//       const { user, accessToken } = data;
-
-//       return { user, accessToken };
-//     } catch (error: unknown) {
-//       let message = "OTP verification failed";
-//       if (
-//         error &&
-//         typeof error === "object" &&
-//         "response" in error &&
-//         error.response &&
-//         typeof error.response === "object" &&
-//         "data" in error.response &&
-//         error.response.data &&
-//         typeof error.response.data === "object" &&
-//         "message" in error.response.data
-//       ) {
-//         message =
-//           (error.response as { data: { message?: string } }).data.message ||
-//           message;
-//       }
-//       return thunkAPI.rejectWithValue(message);
-//     }
-//   }
-// );
-
-// Resend code
-
+// ---------------- RESEND CODE ----------------
 export const resendCode = createAsyncThunk(
   "auth/resendCode",
   async (email: string, { rejectWithValue }) => {
@@ -202,30 +113,9 @@ export const resendCode = createAsyncThunk(
       const response = await axios.post(
         `${baseURL}/auth/resend-otp?email=${email}`
       );
-      return response.data.message; // or whatever your API returns
-    } catch (error: unknown) {
-      let message = "Failed to resend code";
-      if (
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        (error as { response?: { data?: { message?: string } } }).response &&
-        typeof (error as { response?: { data?: { message?: string } } })
-          .response === "object" &&
-        "data" in
-          (error as { response?: { data?: { message?: string } } }).response! &&
-        (error as { response?: { data?: { message?: string } } }).response!
-          .data &&
-        typeof (error as { response?: { data?: { message?: string } } })
-          .response!.data === "object" &&
-        "message" in
-          (error as { response?: { data?: { message?: string } } }).response!
-            .data!
-      ) {
-        message =
-          (error as { response: { data: { message?: string } } }).response.data
-            .message || message;
-      }
+      return response.data.message;
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Failed to resend code";
       return rejectWithValue(message);
     }
   }
@@ -235,96 +125,75 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // ✅ Logout
     logout: (state: AuthState) => {
       Cookies.remove("accessToken");
+      Cookies.remove("user");
       state.user = null;
       state.accessToken = null;
       state.loading = false;
       state.error = null;
     },
+
+    // ✅ Load current user from cookies (for persistence)
+    loadUser: (state: AuthState) => {
+      const token = Cookies.get("accessToken");
+      const user = Cookies.get("user");
+
+      if (token && user) {
+        state.accessToken = token;
+        state.user = JSON.parse(user);
+      } else {
+        state.accessToken = null;
+        state.user = null;
+      }
+    },
   },
   extraReducers: (builder: ActionReducerMapBuilder<AuthState>) => {
     builder
-      .addCase(loginUser.pending, (state: AuthState) => {
+      // Login
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
-        state.accessToken = null;
         state.error = null;
       })
       .addCase(
         loginUser.fulfilled,
         (
-          state: AuthState,
+          state,
           action: PayloadAction<{ user: User; accessToken: string }>
         ) => {
           state.loading = false;
-          console.log("Login successful from auth slice: ", action.payload);
           state.user = action.payload.user;
           state.accessToken = action.payload.accessToken;
         }
       )
-      .addCase(
-        loginUser.rejected,
-        (state: AuthState, action: PayloadAction<unknown>) => {
-          state.loading = false;
-          state.error = action.payload as string;
-          state.user = null;
-          state.accessToken = null;
-        }
-      )
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.user = null;
+        state.accessToken = null;
+      })
+
+      // Register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
-        state.accessToken = null;
         state.error = null;
       })
-      .addCase(
-        registerUser.fulfilled,
-        (state, action: PayloadAction<{ user: User; accessToken: string }>) => {
-          state.loading = false;
-          state.user = action.payload.user;
-          state.accessToken = action.payload.accessToken;
-        }
-      )
-      .addCase(
-        registerUser.rejected,
-        (state, action: PayloadAction<unknown>) => {
-          state.loading = false;
-          state.error = action.payload as string;
-          state.user = null;
-          state.accessToken = null;
-        }
-      )
-      // .addCase(verifyOtp.pending, (state) => {
-      //   state.loading = true;
-      //   state.error = null;
-      // })
-      // .addCase(
-      //   verifyOtp.fulfilled,
-      //   (
-      //     state,
-      //     action: PayloadAction<{ user: User; accessToken: string } | null>
-      //   ) => {
-      //     state.loading = false;
-      //     if (action.payload) {
-      //       state.user = action.payload.user;
-      //       state.accessToken = action.payload.accessToken;
-      //     } else {
-      //       // If no user or token returned, just set user/token to null (or keep as is)
-      //       state.user = null;
-      //       state.accessToken = null;
-      //     }
-      //   }
-      // )
-      // .addCase(verifyOtp.rejected, (state, action: PayloadAction<unknown>) => {
-      //   state.loading = false;
-      //   state.error = action.payload as string;
-      // })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Resend code
       .addCase(resendCode.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(resendCode.fulfilled, (state) => {
         state.loading = false;
-        // state.message = action.payload;
       })
       .addCase(resendCode.rejected, (state, action) => {
         state.loading = false;
@@ -333,5 +202,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, loadUser } = authSlice.actions;
 export default authSlice.reducer;

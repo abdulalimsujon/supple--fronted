@@ -120,22 +120,14 @@ const RestaurantLayout = () => {
     setIsGenerating(true);
 
     try {
-      const res = await axios.post(
-        `${
-          import.meta.env.VITE_BACKEND_BASE_URL
-        }/table/create-table-with-qrcode`,
-        {
-          numTables: Number(numTables),
-          capacity: Number(capacity),
-          floor: selectedFloor._id,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        }
-      );
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/table/create-table-with-qrcode`, {
+  numTables: Number(numTables),
+  capacity: Number(capacity),
+  floor: selectedFloor._id,
+}, { headers: { "Content-Type": "application/json", Authorization: token } });
+
+
+
 
       if (res.data?.success) {
         interface CreatedTable {
@@ -194,7 +186,7 @@ const RestaurantLayout = () => {
             "space-y-6 col-span-3 md:col-span-1",
             "fixed md:relative top-0 right-0 h-full w-3/4 md:w-auto",
             "p-4 md:p-0 z-50 transform transition-transform duration-300 ease-in-out",
-            "shadow-lg md:shadow-none bg-white dark:bg-primary-dark",
+            "shadow-lg md:shadow-none bg-white dark:bg-gray-900",
             isSidebarOpen
               ? "translate-x-0"
               : "translate-x-full md:translate-x-0"
@@ -243,7 +235,7 @@ const RestaurantLayout = () => {
               {tables.map((table) => (
                 <div
                   key={table.id}
-                  className="bg-white dark:bg-primary-dark p-4 rounded-lg shadow text-center"
+                  className="bg-white dark:bg-gray-400 p-4 rounded-lg shadow text-center"
                 >
                   <h3 className="font-medium mb-2">Table {table.id}</h3>
                   <img

@@ -11,20 +11,22 @@ import { useState } from "react";
 import { zoneType } from "@/constants/zone";
 import Cookies from "js-cookie";
 import axios from "axios";
+;
 
 const CreateLayoutModal = ({ ButtonText }: { ButtonText: string }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  
   const validData = z.object({
     zoneName: z.string().min(1, { message: "Zone name is required" }),
     zoneType: z.string().min(1, { message: "Zone type is required" }),
     tableName: z.string().min(1, { message: "Table name is required" }),
     tableSetting: z.string().min(1, { message: "Table setting is required" }),
-    seatingCapability: z.coerce
+    seatingCapacity: z.coerce
       .number()
-      .min(1, { message: "Seating capability is required" }),
+      .min(1, { message: "Seating capacity is required" }),
   });
 
   const onSubmit = async (data: FieldValues) => {
@@ -34,17 +36,20 @@ const CreateLayoutModal = ({ ButtonText }: { ButtonText: string }) => {
     const token = Cookies.get("accessToken");
     if (!token) {
       console.error("No token found in cookies");
-
       return;
     }
 
-    const payload = {
-      zoneName: data.zoneName,
-      zoneType: data.zoneType,
-      tableName: data.tableName,
-      tableSetting: data.tableSetting,
-      seatingCapacity: data.seatingCapability,
-    };
+
+
+
+const payload = {
+  restaurant: "68a861e4c2aea051a07cb8ad", 
+  zoneName: data.zoneName,
+  zoneType: data.zoneType,
+  tableName: data.tableName,
+  tableSetting: data.tableSetting,
+  seatingCapacity: data.seatingCapacity,
+};
 
     try {
       await axios.post(
@@ -53,7 +58,7 @@ const CreateLayoutModal = ({ ButtonText }: { ButtonText: string }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: token,
+            Authorization: `Bearer ${token}`, // ✅ fixed
           },
         }
       );
@@ -125,8 +130,8 @@ const CreateLayoutModal = ({ ButtonText }: { ButtonText: string }) => {
 
         <div>
           <SuppleInput
-            name="seatingCapability"
-            label="Seating Capability"
+            name="seatingCapacity" // ✅ fixed name
+            label="Seating Capacity"
             placeholder="Enter seating capacity"
             type="number"
           />
