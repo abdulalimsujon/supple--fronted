@@ -60,7 +60,7 @@ const CreateOrderForOwner = () => {
 
   //floor and table
   const [floors, setFloors] = useState([]);
-  const [tables, setTables] = useState([]);
+  // const [tables, setTables] = useState([]);
   // const [selectedFloor, setSelectedFloor] = useState("");
 
   const statusOptions = [
@@ -118,10 +118,10 @@ const CreateOrderForOwner = () => {
         }
       )
         .then((res) => res.json())
-        .then((data) => setTables(data?.data?.result))
+        // .then((data) => setTables(data?.data?.result))
         .catch((err) => console.error("Error fetching tables:", err));
     } else {
-      setTables([]);
+      // setTables([]);
     }
   }, [token, selectedFloor]);
 
@@ -215,9 +215,15 @@ const CreateOrderForOwner = () => {
               placeholder="Select Table"
               required
             >
-              {tables.map((table: Table) => (
-                <SelectItem value={table._id}>{table.name}</SelectItem>
-              ))}
+         
+             
+                 <SelectItem value="t1">t1</SelectItem>
+                  <SelectItem value="t2">t2</SelectItem>
+                  <SelectItem value="t3">t3</SelectItem>
+                  <SelectItem value="t4">t4</SelectItem>
+                  <SelectItem value="t5">t5</SelectItem>
+                  <SelectItem value="t6">t6</SelectItem>
+                  <SelectItem value="t7">t7</SelectItem>
             </SuppleSelect>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               {menus.map((item) => (
