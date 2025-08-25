@@ -4,18 +4,11 @@
 
 ---
 
-## Table of Contents
-- [Tech Stack](#tech-stack)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Folder Structure](#folder-structure)
-- [Authentication & Roles](#authentication--roles)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
-- [License](#license)
+##  Live Demo
 
----
+Check out the latest deployed version of the Supple frontend here:  
+[https://suplle-two.vercel.app](https://suplle-two.vercel.app)  
+
 
 ## Tech Stack
 
@@ -66,12 +59,40 @@
 - npm or yarn  
 - Stripe account for handling payments  
 
-### Installation
+## 🚀 Installation
 
-#### Backend
+### 🔧 Backend Setup
+
 ```bash
-cd backend
+git clone https://github.com/abdulalimsujon/supple-server.git
+cd supple-server  
 npm install
 cp .env.example .env
 # Update .env with your MongoDB URI, JWT secret, and Stripe keys
-npm run dev
+npm run start:dev
+
+#### Backend
+```bash
+git clone https://github.com/abdulalimsujon/supple-server.git
+cd supple-server  
+npm install
+cp .env.example .env
+# Update .env with your MongoDB URI, JWT secret, and Stripe keys
+npm run start:dev
+
+
+# 🛍️ Supple Frontend
+
+This is the frontend for the **Supple** e-commerce platform, built with **React** and **Vite**.
+
+---
+
+## 🚀 Installation & Setup
+
+Follow the steps below to get the frontend running locally:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/abdulalimsujon/supple--fronted.git
+
