@@ -10,6 +10,25 @@ Check out the latest deployed version of the Supple frontend here:
 [https://suplle-two.vercel.app](https://suplle-two.vercel.app)  
 
 
+---
+
+## 🔐 Test Login Credentials
+
+You can use the following test accounts to explore different roles:
+
+### 🧑‍🍳 Restaurant Owner
+
+- **Email:** `alimsujon15@gmail.com`  
+- **Password:** `123456`
+
+### 🛡️ Admin
+
+- **Email:** `admin@gmail.com`  
+- **Password:** `admin12345`
+
+---
+
+
 ## Tech Stack
 
 **Frontend**  
